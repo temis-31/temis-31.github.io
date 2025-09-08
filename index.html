@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen de Preguntas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f5;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Cuestionario de Estudio</h1>
+        <p class="mb-6 text-center text-gray-600">Completa las preguntas del examen y revisa tus respuestas al final.</p>
+
+        <form id="quiz-form" class="space-y-8">
+            <!-- Las preguntas se generarán aquí con JavaScript -->
+        </form>
+
+        <div class="flex justify-center mt-8">
+            <button id="submit-btn" type="button" class="py-3 px-6 rounded-md shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Finalizar Examen
+            </button>
+        </div>
+
+        <div id="results-container" class="mt-8 p-6 bg-gray-100 rounded-xl hidden">
+            <h2 class="text-2xl font-bold mb-4 text-center">Resultados</h2>
+            <div id="summary" class="text-center mb-4 text-lg font-semibold"></div>
+            <div id="results-content" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        // Array con las preguntas, opciones y respuestas correctas del examen.
+        const questions = [
+            {
+                question: 'Question #1: When you execute a reboot command on the vMaster, how is aVCS Chassis affected?',
+                options: [
+                    'Reboot is performed on vMaster and reload operation on vBlades.',
+                    'All devices in the chassis are rebooted.',
+                    'Reboot is performed on vMaster.',
+                    'Reboot is performed only on vBlades.'
+                ],
+                correctAnswer: 'Reboot is performed on vMaster.'
+            },
+            {
+                question: 'Question #2: What information is typically submitted with every aXAPI call after the initial login is complete?',
+                options: [
+                    'Authorization header with signature',
+                    'The ACOS device serial number',
+                    'The programming language being used',
+                    'The AXAPI special permission XML file',
+                    'Log file location'
+                ],
+                correctAnswer: 'Authorization header with signature'
+            },
+            {
+                question: 'Question #3: What is the purpose of a VRRP-A floating-IP address?',
+                options: [
+                    'To serve as a tie-breaker when selecting a VRRP-A owner.',
+                    'To provide a single next hop IP address for uplink and downlink devices.',
+                    'To use as source IP address for VRRP-A hellos.',
+                    'To provide a single IP to manage all VRRP-A devices in the set.'
+                ],
+                correctAnswer: 'To provide a single next hop IP address for uplink and downlink devices.'
+            },
+            {
+                question: 'Question #4: When vBlade A issues a "vcs vmaster-take-over 200" command, which statement is true?',
+                options: [
+                    'The command is ignored when the current vMaster is in vMaster maintenance mode.',
+                    'Any subsequent vmaster-take-over command within the chassis with a parameter smaller than 201 is ignored.',
+                    'The 200 priority is compared to the current vmaster\'s default vrid priority to determine which device controls the chassis.',
+                    'If an administrator on vBlade B were to simultaneously issue command vcs vmaster-take-over 210, vBlade B would become the vMaster.'
+                ],
+                correctAnswer: 'If an administrator on vBlade B were to simultaneously issue command vcs vmaster-take-over 210, vBlade B would become the vMaster.'
+            },
+            {
+                question: 'Question #5: Which statement describes the effect of this command: erase preserve-management?',
+                options: [
+                    'The startup-config file is erased and the ACOS is immediately rebooted',
+                    'All configuration profiles, SSL certificates, aFlex polices, black/white lists, and system logs are erased the next time the system reboots',
+                    'The startup-config file is erased but the management interface ip configuration is kept',
+                    'The start-up config file is erased but the all of the admin accounts are preserved'
+                ],
+                correctAnswer: 'The startup-config file is erased but the management interface ip configuration is kept'
+            },
+            {
+                question: 'Question #6: Which VRID priority scheme will implement an Active-Active-Active VRRP-A deployment with three ACOS devices?',
+                options: [
+                    'Scheme 1',
+                    'Scheme 2',
+                    'Scheme 3'
+                ],
+                image: 'Question #6 tables with VRID priorities',
+                correctAnswer: 'Scheme 1'
+            },
+            {
+                question: 'Question #7: Select two aXAPI implementation use cases. (Choose two.)',
+                options: [
+                    'Auto-syncing the configurations via virtual chassis.',
+                    'Extract ACOS configurations or statistics from ACOS.',
+                    'Perform deep packet inspection on traffic and redirect and modify content.',
+                    'Writing scripts to automate configuration changes.'
+                ],
+                type: 'checkbox',
+                correctAnswer: [
+                    'Extract ACOS configurations or statistics from ACOS.',
+                    'Writing scripts to automate configuration changes.'
+                ]
+            },
+            {
+                question: 'Question #8: ACOS can log the following accounting records for administrative sessions:',
+                options: [
+                    'device access attempts only',
+                    'syslog errors of a specified severity level',
+                    'device access and command entry attempts',
+                    'command entry attempts only',
+                    'syslog errors of severity greater than a specified level'
+                ],
+                correctAnswer: 'device access and command entry attempts'
+            },
+            {
+                question: 'Question #9: Given the following VRID 2 configuration, which device will host the VRID after the three devices at the same time? (Configuration provided in PDF)',
+                options: [
+                    'A Device 2',
+                    'B Device 1',
+                    'CVCS will randomly assign the VRID to a device based on the uptime of the device',
+                    'D Device 3',
+                    'E The VRID will be hosted on all three devices at the same time'
+                ],
+                correctAnswer: 'B Device 1'
+            },
+            {
+                question: 'Question #10: When VRRP-A is enabled on a device with multiple partitions, which statement about VRID is correct?',
+                options: [
+                    'Each partition has its own distinct VRID 0.',
+                    'VRID 0 only exists in the shared partition; private partitions can only contain VRIDs numbered higher than 0.',
+                    'VRID O is initially enabled only in the shared partition; partition administrators can enable VRID O in their partitions.',
+                    'When using VRRP-A on a device with multiple partitions, VRID 0 is automatically disabled.'
+                ],
+                correctAnswer: 'VRID 0 only exists in the shared partition; private partitions can only contain VRIDs numbered higher than 0.'
+            },
+            {
+                question: 'Question #11: You upgraded the boot image and changed the boot pointer to the new image using bootimage command. Which of the following operations will load the new image?',
+                options: [
+                    'reload',
+                    'restore',
+                    'system-reset',
+                    'shutdown-r',
+                    'restart',
+                    'reboot'
+                ],
+                correctAnswer: 'reboot'
+            },
+            {
+                question: 'Question #12: Device 1 is the vMaster in a virtual chassis. Select the command set that adds an IP address to VE interface 200 on device 3?',
+                options: [
+                    'A. Interface ve 200 device 3 ip address 198.162.4.1/24',
+                    'B. interface device-context 3 interface ve 200 ip address 198.162.4.1/24',
+                    'C. interface ve $3/200$ ip address 198.162.4.1/24',
+                    'D. vcs device-context device 3 interface ve 200 ip address 198.162.4.1/24'
+                ],
+                correctAnswer: 'B. interface device-context 3 interface ve 200 ip address 198.162.4.1/24'
+            },
+            {
+                question: 'Question #13: Given the following configuration, which statement describes Alice\'s partition access rights? (Configuration provided in PDF)',
+                options: [
+                    'A. Alice can access the partitions alpha and beta partition, but not the shared partition.',
+                    'B. Alice can access the partitions alpha, beta, as well as the shared partition.',
+                    'C. Alice can access either the alpha or beta partitions, but cannot access them both.',
+                    'D. Alice can access the shared partition provided she is not currently accessing the alpha or beta partition.'
+                ],
+                correctAnswer: 'A. Alice can access the partitions alpha and beta partition, but not the shared partition.'
+            },
+            {
+                question: 'Question #14: Given the following configuration, what must you do to ensure that command "device-context x" always succeeds?',
+                options: [
+                    'A Verify the interface is untagged on each device.',
+                    'B Enable management service ssh on that interface for each device',
+                    'C Configure vcs floating-ip on network 3.0.0.0/24.',
+                    'D Apply acl "permit 3.0.0.0/24" on that interface for each device.'
+                ],
+                image: 'Question #14 table showing vMaster and vBlade states',
+                correctAnswer: 'C Configure vcs floating-ip on network 3.0.0.0/24.'
+            },
+            {
+                question: 'Question #15: Which statement correctly describes the following configuration? snmp enable traps slb-change server snmp enable traps slb-change server-port snmp enable traps slb-change vip snmp enable traps slb-change vip-port',
+                options: [
+                    'A These commands enable SNMP traps for any SLB changes',
+                    'B These commands enable SNMP traps for only SLB changes related to virtual-server',
+                    'C These commands only enable SNMP traps for the creation or removal of virtual and real servers and ports',
+                    'D These commands enable SNMP traps for only SLB changes related to real-servers'
+                ],
+                correctAnswer: 'A These commands enable SNMP traps for any SLB changes'
+            },
+            {
+                question: 'Question #16: In a VRRP-A topology that contains four devices, select the number of devices on which a single VRID can be simultaneously active?',
+                options: [
+                    'A 1',
+                    'B 2',
+                    'C 3',
+                    'D 4'
+                ],
+                correctAnswer: 'D 4'
+            },
+            {
+                question: 'Question #17: How are aVCS changes that are performed on the vMaster pushed to the vBlades?',
+                options: [
+                    'A. HA Sync needs to be done',
+                    'B. VRRP-A should be failed over',
+                    'C. Automatically',
+                    'D. aVCS reload has to be performed'
+                ],
+                correctAnswer: 'C. Automatically'
+            },
+            {
+                question: 'Question #18: When private partitions are created on a device where VRRP-A is enabled, which statement is true?',
+                options: [
+                    'A. No VRIDs are configured on a private partition until explicitly configured.',
+                    'B. VRID O is configured with settings identical to VRID 0 on the shared partition.',
+                    'C. All VRIDs on the shared partition are replicated on the private partitions.',
+                    'D. VRID O is configured with its default settings.',
+                    'E. VRRP-A is not available on private partitions.'
+                ],
+                correctAnswer: 'A. No VRIDs are configured on a private partition until explicitly configured.'
+            },
+            {
+                question: 'Question #19: Select the statement that describes aXAPI authentication and authorization requirements:',
+                options: [
+                    'A. aXAPI requires that users are assigned to the "aXAPI" role before they can execute a script.',
+                    'B. aXAPI is subject to the same permissions requirements as the CLI and GUI.',
+                    'C. aXAPI has special permissions that differ from CLI and GUI permissions.',
+                    'D. aXAPI is subject to authorization but not authentication requirements.'
+                ],
+                correctAnswer: 'B. aXAPI is subject to the same permissions requirements as the CLI and GUI.'
+            },
+            {
+                question: 'Question #20: Which of the following statements are true about Application Delivery Partitions? 1. The same virtual ethernet interface can be used by multiple private partitions 2. An untagged ethernet interface is visible only within the partition in which it is configured',
+                options: [
+                    'A. 1 is true; 2 is false',
+                    'B. 1 is false; 2 is true',
+                    'C. 1 and 2 are both true',
+                    'D. 1 and 2 are both false'
+                ],
+                correctAnswer: 'B. 1 is false; 2 is true'
+            },
+            {
+                question: 'Question #21: Which statement describes the following configuration? (Configuration provided in PDF)',
+                options: [
+                    'A. Send logs related to 10.10.10.5 to email address syslog@a10networks.com.',
+                    'B. The ACOS device is configured to send log messages by email.',
+                    'C. The ACOS administrator\'s email is syslog@a10networks.com where SNMP traps will be sent.',
+                    'D. The ACOS device is configured to act as SMTP server to forward logging messages for other devices.'
+                ],
+                correctAnswer: 'B. The ACOS device is configured to send log messages by email.'
+            },
+            {
+                question: 'Question #22: Given the following "show vcs summary" output, which statements are true about the virtual chassis set? (Choose three.)',
+                options: [
+                    'A. Three devices were configured as part of the virtual chassis.',
+                    'B. The command was run from the aVCS vMaster.',
+                    'C. The aVCS vMaster of the group can always be accessed at IP Address 1.0.0.1.',
+                    'D. The aVCS vMaster of the set can always be accessed at IP Address 224.0.0.210.',
+                    'E. The command was run from device 3 of the set.',
+                    'F. This is aVCS set-id 1.'
+                ],
+                type: 'checkbox',
+                image: 'Question #22 table with VCS and member details',
+                correctAnswer: [
+                    'A. Three devices were configured as part of the virtual chassis.',
+                    'E. The command was run from device 3 of the set.',
+                    'F. This is aVCS set-id 1.'
+                ]
+            },
+            {
+                question: 'Question #23: What do we know about the state of the system from the CLI prompt? (Choose two.) A1-vMaster[1/1][Helium2]#',
+                options: [
+                    'A. There is only 1 member in this A10 Virtual Chassis.',
+                    'B. There are at least 2 private partitions configured.',
+                    'C. aVCS has been configured, and this host is part of aVCS set 1.',
+                    'D. aVCS has been configured, and this host is part of aVCS set 1/1.',
+                    'E. Application Delivery Partitions have been configured.'
+                ],
+                type: 'checkbox',
+                correctAnswer: [
+                    'C. aVCS has been configured, and this host is part of aVCS set 1.',
+                    'E. Application Delivery Partitions have been configured.'
+                ]
+            },
+            {
+                question: 'Question #24: The "show admin" displays the following output. Select the correct statements concerning admins on this device. (Choose two.)',
+                options: [
+                    'A. Sally is a read write administrator on the Acme partition.',
+                    'B. Fred is a read write administrator on the Acme partition.',
+                    'C. Fred can only log in with the web or api client.',
+                    'D. User admin has no access to the acme partition.',
+                    'E. Fred can run aXAPI scripts against the acme partition using his login information.',
+                    'F. Sally can only log in with the web client.',
+                    'G. Sally is a read write administrator on the shared partition.'
+                ],
+                type: 'checkbox',
+                image: 'Question #24 table with admin user details',
+                correctAnswer: [
+                    'A. Sally is a read write administrator on the Acme partition.',
+                    'D. User admin has no access to the acme partition.'
+                ]
+            },
+            {
+                question: 'Question #25: Describe VRRP-A (high availability) and aVCS interoperability.',
+                options: [
+                    'A. Enabling VRRP-A requires that aVCS is operational',
+                    'B. Enabling aVCS require VRRP-A is operational',
+                    'C. VRRP-A and aVCS operate independently of each other',
+                    'D. VRRP-A and aVCS must function simultaneously'
+                ],
+                correctAnswer: 'C. VRRP-A and aVCS operate independently of each other'
+            },
+            {
+                question: 'Question #26: Which statement correctly describes the result of the following commands? (Commands provided in PDF)',
+                options: [
+                    'A. System logs generated from partition "p1" will be sent to logging server "2.2.2.2", and only warning severity log messages are sent to the shared logging server\'s "192.168.216.45".',
+                    'B. System logs generated from partition "p1" will be sent to logging server "2.2.2.2", as well as to the shared logging server\'s "192.168.216.45".',
+                    'C. System logs generated from partition "p1" will be sent to logging server 2.2.2.2".',
+                    'D. System logs generated from partition "p1" will be sent to the shared logging server\'s "192.168.216.45"'
+                ],
+                correctAnswer: 'B. System logs generated from partition "p1" will be sent to logging server "2.2.2.2", as well as to the shared logging server\'s "192.168.216.45".'
+            },
+            {
+                question: 'Question #27: Which commands display the ACOS device serial number? (Choose two.)',
+                options: [
+                    'A. show system',
+                    'B. show hardware',
+                    'C. show environment',
+                    'D. show serial',
+                    'E. show version'
+                ],
+                type: 'checkbox',
+                correctAnswer: [
+                    'B. show hardware',
+                    'E. show version'
+                ]
+            },
+            {
+                question: 'Question #28: Which statement is true about the requirements for ACOS devices that are part of an aVCS cluster?',
+                options: [
+                    'A. Any Thunder series devices can be clustered together in an aVCS set',
+                    'B. Devices must be the same model but can have different optional hardware cards',
+                    'C. Devices must be the same model and have the same optional hardware cards'
+                ],
+                correctAnswer: 'C. Devices must be the same model and have the same optional hardware cards'
+            },
+            {
+                question: 'Question #29: Which three items does aXAPI require to configure an ACOS object (such as an SLB object)? (Choose three.)',
+                options: [
+                    'A. Endpoint with parameters',
+                    'B. Authorization signature',
+                    'C. Device\'s VIP URL',
+                    'D. Device\'s serial number',
+                    'E. Device\'s management/data IP',
+                    'F. Encrypted connection to device'
+                ],
+                type: 'checkbox',
+                correctAnswer: [
+                    'A. Endpoint with parameters',
+                    'B. Authorization signature',
+                    'E. Device\'s management/data IP'
+                ]
+            }
+        ];
+
+        const quizForm = document.getElementById('quiz-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const resultsContent = document.getElementById('results-content');
+        const summaryElement = document.getElementById('summary');
+        
+        // Función para generar las preguntas en el formulario
+        function renderQuestions() {
+            quizForm.innerHTML = ''; // Limpiar el formulario antes de renderizar
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('p-6', 'bg-white', 'rounded-lg', 'shadow');
+                
+                const questionTitle = document.createElement('p');
+                questionTitle.classList.add('text-lg', 'font-semibold', 'text-gray-900', 'mb-4');
+                questionTitle.textContent = q.question;
+                questionDiv.appendChild(questionTitle);
+                
+                // Si la pregunta tiene una imagen, la agregamos aquí
+                if (q.image) {
+                    const imageContainer = document.createElement('div');
+                    imageContainer.classList.add('my-4', 'text-center');
+                    const image = document.createElement('img');
+                    image.src = `https://placehold.co/400x200?text=${encodeURIComponent(q.image)}`;
+                    image.alt = q.image;
+                    image.classList.add('rounded-md', 'shadow-md', 'mx-auto');
+                    imageContainer.appendChild(image);
+                    questionDiv.appendChild(imageContainer);
+                }
+                
+                const inputType = q.type === 'checkbox' ? 'checkbox' : 'radio';
+                const inputName = `question-${index}`;
+                
+                q.options.forEach((option, i) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.classList.add('flex', 'items-center', 'mb-2');
+                    
+                    const optionId = `question-${index}-option-${i}`;
+                    
+                    const optionInput = document.createElement('input');
+                    optionInput.type = inputType;
+                    optionInput.id = optionId;
+                    optionInput.name = inputName;
+                    optionInput.value = option;
+                    optionInput.classList.add('h-4', 'w-4', 'text-indigo-600', 'border-gray-300', 'focus:ring-indigo-500');
+                    
+                    const optionLabel = document.createElement('label');
+                    optionLabel.htmlFor = optionId;
+                    optionLabel.classList.add('ml-3', 'text-sm', 'font-medium', 'text-gray-700');
+                    optionLabel.textContent = option;
+                    
+                    optionDiv.appendChild(optionInput);
+                    optionDiv.appendChild(optionLabel);
+                    questionDiv.appendChild(optionDiv);
+                });
+                
+                quizForm.appendChild(questionDiv);
+            });
+        }
+        
+        // Función para manejar el envío del formulario
+        submitBtn.addEventListener('click', () => {
+            const formData = new FormData(quizForm);
+            resultsContent.innerHTML = ''; // Limpiar resultados anteriores
+            
+            let correctCount = 0;
+            let incorrectCount = 0;
+            
+            questions.forEach((q, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.classList.add('p-4', 'rounded-lg');
+                
+                const questionTitle = `<p class="font-semibold text-gray-800">${q.question}</p>`;
+                
+                let isCorrect = false;
+                let userAnswers = [];
+
+                if (q.type === 'checkbox') {
+                    // Obtener todas las respuestas seleccionadas para la pregunta
+                    formData.getAll(`question-${index}`).forEach(answer => {
+                        userAnswers.push(answer);
+                    });
+                    
+                    // Comparar los arrays de respuestas
+                    if (JSON.stringify(userAnswers.sort()) === JSON.stringify(q.correctAnswer.sort())) {
+                        isCorrect = true;
+                    }
+
+                } else {
+                    const userAnswer = formData.get(`question-${index}`);
+                    userAnswers = userAnswer ? [userAnswer] : [];
+                    if (userAnswer === q.correctAnswer) {
+                        isCorrect = true;
+                    }
+                }
+                
+                if (isCorrect) {
+                    correctCount++;
+                    resultItem.classList.add('bg-green-100');
+                } else {
+                    incorrectCount++;
+                    resultItem.classList.add('bg-red-100');
+                }
+                
+                const userAnswerText = userAnswers.length > 0 ? userAnswers.join(', ') : 'No seleccionaste una respuesta';
+                const correctAnswerText = Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : q.correctAnswer;
+                
+                resultItem.innerHTML = `${questionTitle}
+                                        <p class="text-sm text-gray-700 mt-2">Tu respuesta: ${userAnswerText}</p>
+                                        <p class="text-sm font-semibold text-gray-800 mt-1">Respuesta correcta: ${correctAnswerText}</p>`;
+                resultsContent.appendChild(resultItem);
+            });
+            
+            summaryElement.innerHTML = `Respuestas correctas: ${correctCount} / Respuestas incorrectas: ${incorrectCount}`;
+            resultsContainer.classList.remove('hidden');
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+
+        // Generar las preguntas cuando la página carga
+        document.addEventListener('DOMContentLoaded', renderQuestions);
+
+    </script>
+</body>
+</html>
