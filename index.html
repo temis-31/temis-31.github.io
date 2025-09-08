@@ -37,6 +37,7 @@
 
     <script>
         // Array con las preguntas, opciones y respuestas correctas del examen.
+        // La propiedad 'image' ahora contiene el nombre del archivo de imagen.
         const questions = [
             {
                 question: 'Question #1: When you execute a reboot command on the vMaster, how is aVCS Chassis affected?',
@@ -96,7 +97,7 @@
                     'Scheme 2',
                     'Scheme 3'
                 ],
-                image: 'Question #6 tables with VRID priorities',
+                image: 'q6.png',
                 correctAnswer: 'Scheme 1'
             },
             {
@@ -185,7 +186,7 @@
                     'C Configure vcs floating-ip on network 3.0.0.0/24.',
                     'D Apply acl "permit 3.0.0.0/24" on that interface for each device.'
                 ],
-                image: 'Question #14 table showing vMaster and vBlade states',
+                image: 'question-14-vcs-summary.png',
                 correctAnswer: 'C Configure vcs floating-ip on network 3.0.0.0/24.'
             },
             {
@@ -270,7 +271,7 @@
                     'F. This is aVCS set-id 1.'
                 ],
                 type: 'checkbox',
-                image: 'Question #22 table with VCS and member details',
+                image: 'question-22-vcs-table.png',
                 correctAnswer: [
                     'A. Three devices were configured as part of the virtual chassis.',
                     'E. The command was run from device 3 of the set.',
@@ -304,7 +305,7 @@
                     'G. Sally is a read write administrator on the shared partition.'
                 ],
                 type: 'checkbox',
-                image: 'Question #24 table with admin user details',
+                image: 'question-24-show-admin.png',
                 correctAnswer: [
                     'A. Sally is a read write administrator on the Acme partition.',
                     'D. User admin has no access to the acme partition.'
@@ -391,13 +392,17 @@
                 questionTitle.textContent = q.question;
                 questionDiv.appendChild(questionTitle);
                 
-                // Si la pregunta tiene una imagen, la agregamos aquí
+                // Si la pregunta tiene una imagen, la agregamos aquí.
+                // Usamos la propiedad 'image' para construir la URL.
                 if (q.image) {
                     const imageContainer = document.createElement('div');
                     imageContainer.classList.add('my-4', 'text-center');
                     const image = document.createElement('img');
-                    image.src = `https://placehold.co/400x200?text=${encodeURIComponent(q.image)}`;
-                    image.alt = q.image;
+                    
+                    // Aquí construimos la URL de la imagen a partir del nombre del archivo en la propiedad `image`.
+                    image.src = `https://temis-31.github.io/images/${q.image}`;
+                    image.alt = q.image; // Usamos el nombre del archivo como texto alternativo.
+                    
                     image.classList.add('rounded-md', 'shadow-md', 'mx-auto');
                     imageContainer.appendChild(image);
                     questionDiv.appendChild(imageContainer);
@@ -497,3 +502,4 @@
     </script>
 </body>
 </html>
+
