@@ -47,7 +47,7 @@
                     'Reboot is performed on vMaster.',
                     'Reboot is performed only on vBlades.'
                 ],
-                correctAnswer: 'Reboot is performed on vMaster.'
+                correctAnswer: 'Reboot is performed on vMaster and reload operation on vBlades.'
             },
             {
                 question: 'Question #2: What information is typically submitted with every aXAPI call after the initial login is complete?',
@@ -78,7 +78,7 @@
                     'The 200 priority is compared to the current vmaster\'s default vrid priority to determine which device controls the chassis.',
                     'If an administrator on vBlade B were to simultaneously issue command vcs vmaster-take-over 210, vBlade B would become the vMaster.'
                 ],
-                correctAnswer: 'If an administrator on vBlade B were to simultaneously issue command vcs vmaster-take-over 210, vBlade B would become the vMaster.'
+                correctAnswer: 'The 200 priority is compared to the current vmaster\'s default vrid priority to determine which device controls the chassis.'
             },
             {
                 question: 'Question #5: Which statement describes the effect of this command: erase preserve-management?',
@@ -126,7 +126,7 @@
                 correctAnswer: 'device access and command entry attempts'
             },
             {
-                question: 'Question #9: Given the following VRID 2 configuration, which device will host the VRID after the three devices at the same time? (Configuration provided in PDF)',
+                question: 'Question #9: Given the following VRID 2 configuration, which device will host the VRID after the three devices at the same time? (La elección se basa en la IP mayor)',
                 options: [
                     'A Device 2',
                     'B Device 1',
@@ -134,6 +134,7 @@
                     'D Device 3',
                     'E The VRID will be hosted on all three devices at the same time'
                 ],
+                image: 'q9.png',
                 correctAnswer: 'B Device 1'
             },
             {
@@ -144,7 +145,7 @@
                     'VRID O is initially enabled only in the shared partition; partition administrators can enable VRID O in their partitions.',
                     'When using VRRP-A on a device with multiple partitions, VRID 0 is automatically disabled.'
                 ],
-                correctAnswer: 'VRID 0 only exists in the shared partition; private partitions can only contain VRIDs numbered higher than 0.'
+                correctAnswer: 'Each partition has its own distinct VRID 0.'
             },
             {
                 question: 'Question #11: You upgraded the boot image and changed the boot pointer to the new image using bootimage command. Which of the following operations will load the new image?',
@@ -163,19 +164,20 @@
                 options: [
                     'A. Interface ve 200 device 3 ip address 198.162.4.1/24',
                     'B. interface device-context 3 interface ve 200 ip address 198.162.4.1/24',
-                    'C. interface ve $3/200$ ip address 198.162.4.1/24',
+                    'C. interface ve 3/200 ip address 198.162.4.1/24',
                     'D. vcs device-context device 3 interface ve 200 ip address 198.162.4.1/24'
                 ],
                 correctAnswer: 'B. interface device-context 3 interface ve 200 ip address 198.162.4.1/24'
             },
             {
-                question: 'Question #13: Given the following configuration, which statement describes Alice\'s partition access rights? (Configuration provided in PDF)',
+                question: 'Question #13: Given the following configuration, which statement describes Alice\'s partition access rights?',
                 options: [
                     'A. Alice can access the partitions alpha and beta partition, but not the shared partition.',
                     'B. Alice can access the partitions alpha, beta, as well as the shared partition.',
                     'C. Alice can access either the alpha or beta partitions, but cannot access them both.',
                     'D. Alice can access the shared partition provided she is not currently accessing the alpha or beta partition.'
                 ],
+                image: 'q13.png',
                 correctAnswer: 'A. Alice can access the partitions alpha and beta partition, but not the shared partition.'
             },
             {
@@ -187,7 +189,7 @@
                     'D Apply acl "permit 3.0.0.0/24" on that interface for each device.'
                 ],
                 image: 'q14.png',
-                correctAnswer: 'C Configure vcs floating-ip on network 3.0.0.0/24.'
+                correctAnswer: 'B Enable management service ssh on that interface for each device'
             },
             {
                 question: 'Question #15: Which statement correctly describes the following configuration? snmp enable traps slb-change server snmp enable traps slb-change server-port snmp enable traps slb-change vip snmp enable traps slb-change vip-port',
@@ -207,7 +209,7 @@
                     'C 3',
                     'D 4'
                 ],
-                correctAnswer: 'D 4'
+                correctAnswer: 'A 1'
             },
             {
                 question: 'Question #17: How are aVCS changes that are performed on the vMaster pushed to the vBlades?',
@@ -228,7 +230,7 @@
                     'D. VRID O is configured with its default settings.',
                     'E. VRRP-A is not available on private partitions.'
                 ],
-                correctAnswer: 'A. No VRIDs are configured on a private partition until explicitly configured.'
+                correctAnswer: 'D. VRID O is configured with its default settings.'
             },
             {
                 question: 'Question #19: Select the statement that describes aXAPI authentication and authorization requirements:',
@@ -251,13 +253,14 @@
                 correctAnswer: 'B. 1 is false; 2 is true'
             },
             {
-                question: 'Question #21: Which statement describes the following configuration? (Configuration provided in PDF)',
+                question: 'Question #21: Which statement describes the following configuration?',
                 options: [
                     'A. Send logs related to 10.10.10.5 to email address syslog@a10networks.com.',
                     'B. The ACOS device is configured to send log messages by email.',
                     'C. The ACOS administrator\'s email is syslog@a10networks.com where SNMP traps will be sent.',
                     'D. The ACOS device is configured to act as SMTP server to forward logging messages for other devices.'
                 ],
+                image: 'q21.png',
                 correctAnswer: 'B. The ACOS device is configured to send log messages by email.'
             },
             {
@@ -308,7 +311,7 @@
                 image: 'q24.png',
                 correctAnswer: [
                     'A. Sally is a read write administrator on the Acme partition.',
-                    'D. User admin has no access to the acme partition.'
+                    'E. Fred can run aXAPI scripts against the acme partition using his login information.'
                 ]
             },
             {
@@ -322,13 +325,14 @@
                 correctAnswer: 'C. VRRP-A and aVCS operate independently of each other'
             },
             {
-                question: 'Question #26: Which statement correctly describes the result of the following commands? (Commands provided in PDF)',
+                question: 'Question #26: Which statement correctly describes the result of the following commands?',
                 options: [
                     'A. System logs generated from partition "p1" will be sent to logging server "2.2.2.2", and only warning severity log messages are sent to the shared logging server\'s "192.168.216.45".',
                     'B. System logs generated from partition "p1" will be sent to logging server "2.2.2.2", as well as to the shared logging server\'s "192.168.216.45".',
                     'C. System logs generated from partition "p1" will be sent to logging server 2.2.2.2".',
                     'D. System logs generated from partition "p1" will be sent to the shared logging server\'s "192.168.216.45"'
                 ],
+                image: 'q26.png',
                 correctAnswer: 'B. System logs generated from partition "p1" will be sent to logging server "2.2.2.2", as well as to the shared logging server\'s "192.168.216.45".'
             },
             {
@@ -342,8 +346,8 @@
                 ],
                 type: 'checkbox',
                 correctAnswer: [
-                    'B. show hardware',
-                    'E. show version'
+                    'A. show system',
+                    'B. show hardware'
                 ]
             },
             {
@@ -353,7 +357,7 @@
                     'B. Devices must be the same model but can have different optional hardware cards',
                     'C. Devices must be the same model and have the same optional hardware cards'
                 ],
-                correctAnswer: 'C. Devices must be the same model and have the same optional hardware cards'
+                correctAnswer: 'B. Devices must be the same model but can have different optional hardware cards'
             },
             {
                 question: 'Question #29: Which three items does aXAPI require to configure an ACOS object (such as an SLB object)? (Choose three.)',
@@ -369,7 +373,7 @@
                 correctAnswer: [
                     'A. Endpoint with parameters',
                     'B. Authorization signature',
-                    'E. Device\'s management/data IP'
+                    'F. Encrypted connection to device'
                 ]
             }
         ];
